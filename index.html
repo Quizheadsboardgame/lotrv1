@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LORD OF THE RINGS</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif; /* Standard font */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: transparent; /* Fully transparent background */
+            color: black; /* Standard text color */
+            text-align: center;
+        }
+
+        #quiz-container {
+            background-color: transparent; /* Fully transparent container */
+            padding: 20px;
+            max-width: 600px;
+            width: 100%;
+        }
+
+        #logo {
+            width: 150px;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+
+        .question {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        .answer {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            color: white; /* Change the answer color to white */
+        }
+
+        #next-button {
+            background-color: white; /* Change background color to white */
+            color: black; /* Change text color to black for visibility */
+            border: 2px solid #ff9900; /* Optional: Add a border for better visibility */
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease-in-out;
+        }
+
+        #next-button:hover {
+            background-color: #ffcc00; /* Change hover color for better effect */
+        }
+
+        @keyframes fadeOut {
+            from {
+                opacity: 1;
+            }
+            to {
+                opacity: 0;
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .fadeOut {
+            animation: fadeOut 0.5s forwards;
+        }
+
+        .fadeIn {
+            animation: fadeIn 0.5s forwards;
+        }
+    </style>
+</head>
+<body>
+
+<div id="quiz-container">
+    <img id="logo" src="https://i.imgur.com/cyZ0Z21.png" alt="Logo">
+    <h1>LORD OF THE RINGS</h1>
+    <div id="question-container">
+        <div class="question" id="question">Loading question...</div>
+        <div class="answer" id="answer">Loading answer...</div>
+        <button id="next-button" onclick="nextQuestion()">Next Question</button>
+    </div>
+</div>
+
+<script>
+    // Question and answers data
+    const quizData = [
+        { question: "Which 2 members of the Fellowship are cousins?", answer: "Merry & Pippin" },
+        { question: "What is Gimli’s father’s name?", answer: "Gloin" },
+        { question: "What is Sam’s profession?", answer: "Gardener" },
+        { question: "What King refused to throw the One Ring into Mount Doom?", answer: "Isildur" },
+        { question: "Who is the King of Rohan?", answer: "Theoden" },
+        { question: "What is the name of Saruman’s sidekick / assistant?", answer: "Grima Wormtongue" },
+        { question: "What is the name of Frodo’s sword?", answer: "Sting" },
+        { question: "What monster does Gandalf the Grey fight in the Mines of Moria?", answer: "A Balrog" },
+        { question: "What is the name of Saruman’s fortress?", answer: "Isengard" },
+        { question: "How many members of the Fellowship are there?", answer: "9" },
+        { question: "What is the name of Sauron’s tower?", answer: "Barad-Dur" },
+        { question: "What is Frodo’s undershirt made from?", answer: "Mithril" },
+        { question: "What bone did actor Viggo Mortensen break while filming the Two Towers?", answer: "His toe (kicking a helmet)" },
+        { question: "The Shire has been made into a tourist town. What is the name of that town?", answer: "Hobbiton" },
+        { question: "What race does Aragorn belong to?", answer: "The Dúnedain" },
+        { question: "Who is the father of Faramir and Boromir?", answer: "Lord Denethor" },
+        { question: "What animal did Sam always want to see?", answer: "An Oliphant" },
+        { question: "How many rings were made for men, dwarves, and elves?", answer: "9, 3, 7" },
+        { question: "What forest is home to Treebeard and the other Ents?", answer: "Fangorn" },
+        { question: "What river city is Faramir sent to defend?", answer: "Osgiliath" },
+        { question: "What is the name of the Uruk-Hai Lieutenant that kills Boromir?", answer: "Lurtz" },
+        { question: "Who is the only LOTR cast member to have met J.R.R. Tolkien?", answer: "Christopher Lee (Saruman)" },
+        { question: "Name all the gifts Galadriel gives to members of the Fellowship in the movies.", answer: "Elven rope for Sam, a vial of Eärendil's Light for Frodo, three of her hairs for Gimli, a bow for Legolas, and daggers for Merry and Pippin." },
+        { question: "How does Saruman communicate with Sauron?", answer: "Using a Palantír" },
+        { question: "What is the name of the sword that Elrond gifts to Aragorn?", answer: "Andúril (or reforged Narsil)" },
+        { question: "How many Academy Awards did The Return of the King win?", answer: "11" },
+        { question: "Where and when is Aragorn to look for Gandalf’s arrival at Helm’s Deep?", answer: "To the East, at dawn on the 5th day." },
+        { question: "Who composed the music for the trilogy of movies?", answer: "Howard Shore" },
+        { question: "What food does Frodo forget the taste of as he travels through Mordor?", answer: "Strawberries" },
+        { question: "What is a meeting of the Ents called?", answer: "An entmoot" },
+        { question: "Aragorn has 2 other names in LOTR, what are they?", answer: "Strider & King Elessar" },
+        { question: "What is the name of the horse that rescues Aragorn in the Two Towers?", answer: "Brego" }
+    ];
+
+    let currentQuestionIndex = 0;
+
+    // Shuffle the quiz data
+    function shuffle(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+    }
+
+    // Start the quiz
+    shuffle(quizData);
+    showQuestion();
+
+    function showQuestion() {
+        const questionContainer = document.getElementById("question");
+        const answerContainer = document.getElementById("answer");
+
+        questionContainer.innerText = quizData[currentQuestionIndex].question;
+        answerContainer.innerText = "Loading answer...";
+
+        // Fade in effect
+        answerContainer.classList.remove("fadeIn");
+        answerContainer.classList.add("fadeOut");
+
+        setTimeout(() => {
+            answerContainer.innerText = quizData[currentQuestionIndex].answer;
+            answerContainer.classList.remove("fadeOut");
+            answerContainer.classList.add("fadeIn");
+        }, 500);
+    }
+
+    function nextQuestion() {
+        currentQuestionIndex++;
+        if (currentQuestionIndex < quizData.length) {
+            showQuestion();
+        } else {
+            const questionContainer = document.getElementById("question");
+            const answerContainer = document.getElementById("answer");
+            questionContainer.innerText = "Thank you for playing!";
+            answerContainer.innerText = "";
+            document.getElementById("next-button").style.display = "none"; // Hide the next button
+        }
+    }
+</script>
+
+</body>
+</html>
